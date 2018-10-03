@@ -153,6 +153,16 @@ module AlgoritmoClassificacao =
 
 
         algoritmo dados classes neuronios
+    
+    
+    let classesMap list = 
+        let num = list |> List.length
+        let gen index n = 
+            let head = List.init (index) (fun _ -> 0.0)
+            let tail = List.init (num - head.Length - 1) (fun _ -> 0.0)
+            let v = head @ [1.0] @ tail |> vector
+            (n.ToString(), v)
+        list |> List.mapi gen |> Map.ofList
 
     let iris () =
         printfn "Iris"
@@ -170,17 +180,8 @@ module AlgoritmoClassificacao =
         let neuronios = [4 .. 10]
 
         algoritmoCSV db classes 6 neuronios
-    
-    let classesMap list = 
-        let num = list |> List.length
-        let gen index n = 
-            let head = List.init (index) (fun _ -> 0.0)
-            let tail = List.init (num - head.Length - 1) (fun _ -> 0.0)
-            let v = head @ [1.0] @ tail |> vector
-            (n.ToString(), v)
-        list |> List.mapi gen |> Map.ofList
         
-    let algoritmoDermatologia () =
+    let dermatologia () =
         printfn "Dermatologia"
         let db = CsvFile.Load("dermatology.data").Cache()
         
