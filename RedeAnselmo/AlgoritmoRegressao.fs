@@ -4,9 +4,7 @@ open System
 open System.Diagnostics
 
 open Algoritmo
-open FSharp.Data
 open MathNet.Numerics
-open MathNet.Numerics.Random
 open MathNet.Numerics.LinearAlgebra
 open MathNet.Numerics.Statistics
 open FSharp.Collections.ParallelSeq
@@ -14,17 +12,17 @@ open FSharp.Collections.ParallelSeq
 module AlgoritmoRegressao =
     
     //Tipos
+    //Resultado da Busca em Grade
+    type Parametros = { NumeroNeuronios: int; MSE: float }
     //Saída de uma realização
-    type Realizacao = { RMSE :float; W: Modelo }
+    type Realizacao = { RMSE :float; Parametros: Parametros; W: Modelo;  }
     //Resultado do algoritmo para Regressão
     type Resultado = { RMSE: float; DesvioPadrao: float; Melhor: Realizacao; }
-    //Resultado da Busca em Grade
-    type ResultadoParametros = { NumeroNeuronios: int; MSE: float }
 
     let funcao x =
         3.0 * Math.Sin(x) + 1.0
     
-    //Precisão via validação cruzada para quantidade de neurônios X taxa de ajute
+    //Precisão via validação cruzada para quantidade de neurônios
     let mseGrid dados numNeuronios   = 
         (dados: Par list) |> ignore
         let secoes = 5
@@ -44,20 +42,21 @@ module AlgoritmoRegressao =
 
         [0 .. (secoes - 1)] |> List.map precisaoSecao |> List.average
     
-    //Busca em grade de quantidade de neurônios X taxa de ajuste
+    //Busca em grade de quantidade de neurônios
     let ajusteGrid dados neuronios = 
         let map n =
             let mse = mseGrid dados n 
             let mapping = { NumeroNeuronios = n; MSE = mse }
             mapping
             
-        neuronios |> PSeq.map map |> PSeq.minBy (fun r -> r.MSE)
+        neuronios |> Seq.map map |> Seq.minBy (fun r -> r.MSE)
     
     let realizacao dados neuronios =
+        let sw = new Stopwatch()
         sw.Start()
         let parametros = ajusteGrid dados neuronios
         sw.Stop()
-        printfn "\nParametros escolhidos: \n%A \n(%A)\n" parametros sw.Elapsed
+        printfn "%A\n(%A)\n" parametros sw.Elapsed
 
         let treinamento = 
             let n = dados |> List.length |> float |> (*) 0.8 |> int
@@ -73,20 +72,20 @@ module AlgoritmoRegressao =
 
         let rmse = teste |> List.map map |> List.average |> Math.Sqrt
         
-        { RMSE = rmse; W = w }
+        { RMSE = rmse; W = w; Parametros = parametros }
     
     //Faz 20 realizações e computa a acurácia, desvio padrão e melhor realização.
     let algoritmo dados neuronios = 
         (dados: Par list) |> ignore
-        
-        sw.Restart()
+        let sw = new Stopwatch()
+        sw.Start()
         printf "Fazendo realizacoes... "
         
         let map _ = 
             realizacao (dados.SelectPermutation() |> List.ofSeq) neuronios
 
         let realizacoes =
-            [0 .. 5] |> PSeq.map map |> PSeq.toList
+            [0 .. 20] |> PSeq.map map |> PSeq.toList
     
         let maior = 
             realizacoes |>
@@ -117,7 +116,7 @@ module AlgoritmoRegressao =
 
         let dados = dados |> List.map map
 
-        let neuronios = [5..10]
+        let neuronios = [8..10]
         let resultado = algoritmo dados neuronios
 
         resultado

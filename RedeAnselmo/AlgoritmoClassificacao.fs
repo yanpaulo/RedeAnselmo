@@ -2,26 +2,24 @@
 
 open System
 open System.Diagnostics
-open System.Collections.Generic
 
 open Algoritmo
 open FSharp.Data
 open MathNet.Numerics
-open MathNet.Numerics.Random
 open MathNet.Numerics.LinearAlgebra
 open MathNet.Numerics.Statistics
 open FSharp.Collections.ParallelSeq
 
 module AlgoritmoClassificacao =
     
-    //Saída de uma realização
-    type Realizacao = { TaxaAcerto:float; Confusao: float Matrix; W: Modelo }
-    //Resultado do algoritmo para CLassificação1
-    type Resultado = { Acuracia: float; DesvioPadrao: float; Melhor: Realizacao; }
     //Resultado da Busca em Grade
-    type ResultadoParametros = { NumeroNeuronios: int; Precisao: float }
+    type Parametros = { NumeroNeuronios: int; Precisao: float }
+    //Saída de uma realização
+    type Realizacao = { TaxaAcerto:float; Confusao: float Matrix; Parametros: Parametros; W: Modelo; }
+    //Resultado do algoritmo
+    type Resultado = { Acuracia: float; DesvioPadrao: float; Melhor: Realizacao; }
     
-    //Precisão via validação cruzada para quantidade de neurônios X taxa de ajute
+    //Precisão para número de neurônios
     let precisao dados numNeuronios   = 
         (dados: Par list) |> ignore
         let secoes = 5
@@ -46,23 +44,24 @@ module AlgoritmoClassificacao =
 
         [0 .. (secoes - 1)] |> List.map precisaoSecao |> List.average
     
-    //Busca em grade de quantidade de neurônios X taxa de ajuste
+    //Busca em grade de quantidade de neurônios
     let ajusteGrid dados numSaidas neuronios = 
         let map n =
             let precisao = precisao dados n 
             let mapping = { NumeroNeuronios = n; Precisao = precisao }
             mapping
             
-        neuronios |> PSeq.map map |> PSeq.maxBy (fun r -> r.Precisao)
+        neuronios |> Seq.map map |> Seq.maxBy (fun r -> r.Precisao)
     
     let realizacao dados classes neuronios =
         let numClasses = classes |> List.length        
         let confusao = DenseMatrix.zero numClasses numClasses
     
+        let sw = new Stopwatch()
         sw.Start()
         let parametros = ajusteGrid dados numClasses neuronios
         sw.Stop()
-        printfn "\nParametros escolhidos: \n%A \n(%A)\n" parametros sw.Elapsed
+        printfn "\n%A\n(%A)" parametros sw.Elapsed
 
         let treinamento = 
             let n = dados |> List.length |> float |> (*) 0.8 |> int
@@ -84,14 +83,13 @@ module AlgoritmoClassificacao =
 
         teste |> Seq.iter iter
         
-        { TaxaAcerto = confusao.Diagonal().Sum() / float (teste |> Seq.length) ; Confusao = confusao; W = w }
+        { TaxaAcerto = confusao.Diagonal().Sum() / float (teste |> Seq.length) ; Confusao = confusao; W = w ; Parametros = parametros }
     
     //Faz 20 realizações e computa a acurácia, desvio padrão e melhor realização.
     let algoritmo dados classes neuronios = 
         (dados: Par list) |> ignore
-        let numClasses = classes |> List.length
-        
-        sw.Restart()
+        let sw = new Stopwatch()
+        sw.Start()
         printf "Fazendo realizacoes... "
         
         let map _ = 
