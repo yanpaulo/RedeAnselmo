@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RedeRebelde.App.OpenGL
+namespace RedeAnselmo.App.OpenGL
 {
     public class Application
     {

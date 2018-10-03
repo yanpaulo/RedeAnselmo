@@ -1,4 +1,4 @@
-﻿namespace RedeRebelde
+﻿namespace RedeAnselmo
 
 // Saiba mais sobre F# em http://fsharp.org
 // Veja o projeto 'F# Tutorial' para obter mais ajuda.

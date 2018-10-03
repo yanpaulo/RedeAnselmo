@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RedeRebelde.App.OpenGL
+namespace RedeAnselmo.App.OpenGL
 {
     /// <summary>
     /// The main class.

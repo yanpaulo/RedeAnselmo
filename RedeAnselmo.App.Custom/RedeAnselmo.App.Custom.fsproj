@@ -8,7 +8,7 @@
     <ProjectGuid>f2cc63c7-b3f9-4bf4-8a62-6ab02c45ecfc</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>RedeMyLittlePoney.App.Custom</RootNamespace>
-    <AssemblyName>RedeRebelde.App.Custom</AssemblyName>
+    <AssemblyName>RedeAnselmo.App.Custom</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <UseStandardResourceNames>true</UseStandardResourceNames>

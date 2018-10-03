@@ -1,4 +1,4 @@
-﻿namespace RedeRebelde
+﻿namespace RedeAnselmo
 
 open System
 open System.Diagnostics

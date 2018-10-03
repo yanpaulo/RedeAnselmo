@@ -1,4 +1,4 @@
-﻿namespace RedeRebelde.App.Custom.AssemblyInfo
+﻿namespace RedeAnselmo.App.Custom.AssemblyInfo
 
 open System.Reflection
 open System.Runtime.CompilerServices

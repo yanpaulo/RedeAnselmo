@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Input;
 
 using MVector = MathNet.Numerics.LinearAlgebra.Vector<double>;
 
-namespace RedeRebelde.App.OpenGL
+namespace RedeAnselmo.App.OpenGL
 {
     /// <summary>
     /// This is the main type for your game.

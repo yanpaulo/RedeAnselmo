@@ -1,4 +1,4 @@
-﻿namespace RedeRebelde
+﻿namespace RedeAnselmo
 
 open Algoritmo
 open MathNet.Numerics
